@@ -260,6 +260,9 @@ uis.controller('uiSelectCtrl',
     if ( !ctrl.open ) {
       return false;
     }
+    if(!ctrl.items){
+      ctrl.items = [];
+    }
     var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
     var isActive =  itemIndex == ctrl.activeIndex;
 
@@ -277,7 +280,9 @@ uis.controller('uiSelectCtrl',
   ctrl.isDisabled = function(itemScope) {
 
     if (!ctrl.open) return;
-
+    if(!ctrl.items){
+      ctrl.items = [];
+    }
     var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
     var isDisabled = false;
     var item;

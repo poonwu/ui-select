@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.14.2 - 2016-02-10T10:55:00.463Z
+ * Version: 0.14.2 - 2016-02-13T06:55:42.594Z
  * License: MIT
  */
 
@@ -509,6 +509,9 @@ uis.controller('uiSelectCtrl',
     if ( !ctrl.open ) {
       return false;
     }
+    if(!ctrl.items){
+      ctrl.items = [];
+    }
     var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
     var isActive =  itemIndex == ctrl.activeIndex;
 
@@ -526,7 +529,9 @@ uis.controller('uiSelectCtrl',
   ctrl.isDisabled = function(itemScope) {
 
     if (!ctrl.open) return;
-
+    if(!ctrl.items){
+      ctrl.items = [];
+    }
     var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
     var isDisabled = false;
     var item;
