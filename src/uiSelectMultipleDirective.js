@@ -90,46 +90,79 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
           resultMultiple.unshift(result);
         }
         return resultMultiple;
-      });
-
-      // From model --> view
+      });      // From model --> view
       ngModel.$formatters.unshift(function (inputValue) {
-        var data = $select.parserResult.source (scope, { $select : {search:''}}), //Overwrite $search
-            locals = {},
-            result;
-        if (!data) return inputValue;
-        var resultMultiple = [];
-        var checkFnMultiple = function(list, value){
-          if (!list || !list.length) return;
-          for (var p = list.length - 1; p >= 0; p--) {
-            locals[$select.parserResult.itemName] = list[p];
-            result = $select.parserResult.modelMapper(scope, locals);
-            if($select.parserResult.trackByExp){
-                var matches = /\.(.+)/.exec($select.parserResult.trackByExp);
-                if(matches.length>0 && result[matches[1]] == value[matches[1]]){
-                    resultMultiple.unshift(list[p]);
-                    return true;
-                }
-            }
-            if (angular.equals(result,value)){
-              resultMultiple.unshift(list[p]);
-              return true;
-            }
+          var data = $select.parserResult.source(scope, { $select: { search: '' } }), //Overwrite $search
+              locals = {},
+              result;
+          if (!data) return inputValue;
+          var resultMultiple = [];
+
+          var alreadyExistsInResultsFn = function (candidate) {
+              var trackBy = $select.parserResult.trackByExp;
+
+              for (var i = 0; i < resultMultiple.length; i++) {
+                  var current = resultMultiple[i];
+
+                  if (trackBy) {
+                      var matches = /\.(.+)/.exec($select.parserResult.trackByExp);
+                      if (matches && matches.length > 0 && current[matches[1]] !== undefined && current[matches[1]] == candidate[matches[1]]) {
+                          return true;
+                      }
+                  }
+                  else {
+                      if (angular.equals(current, candidate)) {
+                          return true;
+                      }
+                  }
+              }
+
+              return false;
+          };
+
+          var addToResultsSafeFn = function (candidate) {
+
+              if (!alreadyExistsInResultsFn(candidate)) {
+                  resultMultiple.unshift(candidate);
+                  return true;
+              }
+
+              return false;
+          };
+
+          var checkFnMultiple = function (list, value) {
+              if (!list || !list.length) return;
+              for (var p = list.length - 1; p >= 0; p--) {
+                  locals[$select.parserResult.itemName] = list[p];
+                  result = $select.parserResult.modelMapper(scope, locals);
+                  if ($select.parserResult.trackByExp) {
+                      var matches = /\.(.+)/.exec($select.parserResult.trackByExp);
+                      if (matches && matches.length > 0 && result[matches[1]] !== undefined && result[matches[1]] === value[matches[1]]) {
+                          if (addToResultsSafeFn(list[p])) {
+                              return true;
+                          }
+                      }
+                  }
+                  if (angular.equals(result, value)) {
+                      if (addToResultsSafeFn(list[p])) {
+                          return true;
+                      }
+                  }
+              }
+              return false;
+          };
+          if (!inputValue) return resultMultiple; //If ngModel was undefined
+          for (var k = inputValue.length - 1; k >= 0; k--) {
+              //Check model array of currently selected items 
+              if (!checkFnMultiple($select.selected, inputValue[k])) {
+                  //Check model array of all items available
+                  if (!checkFnMultiple(data, inputValue[k])) {
+                      //If not found on previous lists, just add it directly to resultMultiple
+                      addToResultsSafeFn(inputValue[k]);
+                  }
+              }
           }
-          return false;
-        };
-        if (!inputValue) return resultMultiple; //If ngModel was undefined
-        for (var k = inputValue.length - 1; k >= 0; k--) {
-          //Check model array of currently selected items 
-          if (!checkFnMultiple($select.selected, inputValue[k])){
-            //Check model array of all items available
-            if (!checkFnMultiple(data, inputValue[k])){
-              //If not found on previous lists, just add it directly to resultMultiple
-              resultMultiple.unshift(inputValue[k]);
-            }
-          }
-        }
-        return resultMultiple;
+          return resultMultiple;
       });
       
       //Watch for external model changes 
