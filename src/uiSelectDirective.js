@@ -48,8 +48,10 @@ uis.directive('uiSelect',
         $select.onRemoveCallback = $parse(attrs.onRemove);
 
         if(attrs.loading){
-          attrs.$observe('loading', function(value){
-              $select.loading = scope.$eval(value);
+          scope.$watch(function(){
+            return scope.$eval(attrs.loading);
+          }, function(value){
+              $select.loading = value;
           });
         }
 
