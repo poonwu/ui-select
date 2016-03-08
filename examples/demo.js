@@ -14,7 +14,7 @@ app.filter('propsFilter', function() {
 
     if (angular.isArray(items)) {
       var keys = Object.keys(props);
-        
+
       items.forEach(function(item) {
         var itemMatches = false;
 
@@ -41,6 +41,7 @@ app.filter('propsFilter', function() {
 });
 
 app.controller('DemoCtrl', function($scope, $http, $timeout, $interval) {
+  $scope.loading = true;
   $scope.disabled = undefined;
   $scope.searchEnabled = undefined;
 
