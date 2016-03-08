@@ -1,7 +1,7 @@
 /*!
  * ui-select
  * http://github.com/angular-ui/ui-select
- * Version: 0.14.2 - 2016-03-08T07:31:36.800Z
+ * Version: 0.14.2 - 2016-03-08T07:32:10.068Z
  * License: MIT
  */
 
