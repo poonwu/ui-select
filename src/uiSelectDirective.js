@@ -47,6 +47,14 @@ uis.directive('uiSelect',
         $select.onSelectCallback = $parse(attrs.onSelect);
         $select.onRemoveCallback = $parse(attrs.onRemove);
 
+        if(attrs.loading){
+          scope.$watch(function(){
+            return scope.$eval(attrs.loading);
+          }, function(value){
+              $select.loading = value;
+          });
+        }
+
         //Limit the number of selections allowed
         $select.limit = (angular.isDefined(attrs.limit)) ? parseInt(attrs.limit, 10) : undefined;
 

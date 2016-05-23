@@ -260,6 +260,9 @@ uis.controller('uiSelectCtrl',
     if ( !ctrl.open ) {
       return false;
     }
+    if(!ctrl.items){
+      ctrl.items = [];
+    }
     var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
     var isActive =  itemIndex == ctrl.activeIndex;
 
@@ -277,7 +280,9 @@ uis.controller('uiSelectCtrl',
   ctrl.isDisabled = function(itemScope) {
 
     if (!ctrl.open) return;
-
+    if(!ctrl.items){
+      ctrl.items = [];
+    }
     var itemIndex = ctrl.items.indexOf(itemScope[ctrl.itemProperty]);
     var isDisabled = false;
     var item;
@@ -525,7 +530,7 @@ uis.controller('uiSelectCtrl',
     if (data && data.length > 0 && ctrl.taggingTokens.isActivated) {
       // split by first token only
       var separator = KEY.toSeparator(ctrl.taggingTokens.tokens[0]);
-      var items = data.split(separator); 
+      var items = data.split(separator);
       if (items && items.length > 0) {
         var oldsearch = ctrl.search;
         angular.forEach(items, function (item) {
