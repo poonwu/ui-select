@@ -921,6 +921,18 @@ uis.directive('uiSelect',
             $select.searchEnabled = searchEnabled !== undefined ? searchEnabled : uiSelectConfig.searchEnabled;
         });
 
+        scope.$watch('pattern', function() {
+            var pattern = scope.$eval(attrs.pattern);
+            if(pattern !== undefined) {
+              try {
+                regex = new RegExp(pattern);
+              } catch (e) {
+                throw "Invalid RegEx string parsed";
+              }
+              $select.pattern = regex;
+            }
+        });
+
         scope.$watch('sortable', function() {
             var sortable = scope.$eval(attrs.sortable);
             $select.sortable = sortable !== undefined ? sortable : uiSelectConfig.sortable;
@@ -1405,6 +1417,12 @@ uis.directive('uiSelectMultiple', ['uiSelectMinErr','$timeout', function(uiSelec
       scope.$watch('$select.disabled', function(newValue, oldValue) {
         // As the search input field may now become visible, it may be necessary to recompute its size
         if (oldValue && !newValue) $select.sizeSearchInput();
+      });
+
+      scope.$watch('$select.search', function(newValue, oldValue) {
+          if ($select.pattern && !$select.pattern.test($select.search)) {
+            $select.search = oldValue; 
+          }
       });
 
       $select.searchInput.on('keydown', function(e) {
